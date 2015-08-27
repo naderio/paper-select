@@ -2,10 +2,14 @@
   display: block;
   box-sizing: border-box;
   position: relative;
+  
+  @apply(--paper-select);
 }
 
 :host([disabled]) {
   pointer-events: none;
+  
+  @apply(--paper-select-disabled);
 }
 
 :host #selectedList {
@@ -30,6 +34,8 @@
   cursor: default;
   white-space: nowrap;
   text-overflow: ellipsis;
+  
+  @apply(--paper-select-item);
 }
 
 :host([multiple]) #selectedList {
@@ -63,6 +69,8 @@
   background-color: #666;
   text-decoration: none;
   cursor: pointer;
+  
+  @apply(--paper-select-remove-icon);
 }
 
 :host([multiple]) #selectedList > .selected-item > a {
@@ -119,12 +127,16 @@
   z-index: 1;
   max-height: 240px;
   overflow-y: auto;
+  
+  @apply(--paper-select-menu);
 }
 
 :host paper-menu paper-item,
 :host ::content paper-item {
   position: relative;
   cursor: pointer;
+  
+  @apply(--paper-select-menu-item);
 }
 
 :host ::content paper-progress {
