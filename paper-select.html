@@ -88,7 +88,7 @@ Example:
       <content select="paper-progress"></content>
 
       <paper-menu id="optionsMenu" hidden$="{{!_showOptions}}" i-tabindex="0">
-        <template id="optionsRepeat" is="dom-repeat" items="{{options}}">
+        <template id="optionsRepeat" is="dom-repeat" items="{{availableOptions}}">
           <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0">
             <span>[[_labelOf(item)]]</span>
             <paper-ripple></paper-ripple>
@@ -299,6 +299,8 @@ Polymer({
       this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
     else
       this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
+    //filter options depending on bindValue
+    this._filter();
     this.$.inputContainer._handleValue(this.$.input);
     this._fixLabelState();
   },
@@ -335,7 +337,7 @@ Polymer({
    */
   clear: function() {
     this.input = '';
-    this.options = null;
+    //this.options = null;
     this.$.optionsMenu.selected = null;
   },
 
@@ -440,9 +442,20 @@ Polymer({
         break;
     }
   },
-
-  _onInputKeyÛp: function(event, detail) {
-    switch (event.keyCode) {
+  //filter options based on the selected value
+  _filter: function() {
+    var me = this;
+    if(me.options){
+     me.availableOptions = me.options.filter(function(option){
+       return !me.bindValue.filter(function(bV) {
+         return bV.value === option.value;
+       }).length
+     });
+    }
+   },
+    
+   _onInputKeyÛp : function(event, detail) {
+      switch (event.keyCode) {
       case 8: // backspace
         if (this.multiple && this.input.length === 0 && this.bindValue && this.bindValue.length > 0) {
           this.pop('bindValue');
@@ -485,20 +498,20 @@ Polymer({
     });
   },
 
-  selectItem: function(item) {
-    if (this.multiple) {
-      if (!this.bindValue)
-        this.bindValue = [item];
-      else
-        this.push('bindValue', item);
-    } else {
-      this.bindValue = item;
-    }
-    this.notifyPath('bindValue', this.bindValue);
-    this.async(this.clear.bind(this));
-    if (this.multiple)
-      this.async(this._focus.bind(this));
-  },
+    selectItem : function(item) {
+      if (this.multiple) {
+        if (!this.bindValue)
+          this.bindValue = [item];
+        else
+          this.push('bindValue', item);
+      } else {
+        this.bindValue = item;
+      }
+      this.notifyPath('bindValue', this.bindValue);
+      this.async(this.clear.bind(this));
+      if (this.multiple)
+        this.async(this._focus.bind(this));
+    },
 
   /**
    * The `adding-item` event is fired whenever an item is added.
