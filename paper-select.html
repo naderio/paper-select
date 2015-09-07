@@ -162,7 +162,8 @@ Polymer({
       type: Array,
       value: function() {
         return [];
-      }
+      },
+      observer: '_filterSelected'
     },
     
     opened : {
@@ -452,6 +453,18 @@ Polymer({
        }).length
      });
     }
+   },
+   
+   _filterSelected: function(options) {
+     var me = this;
+     if(me.nonmatching || !me.bindValue){
+       return;
+     }
+     me.bindValue = me.bindValue.filter(function(bV){
+       return me.options.filter(function(option) {
+         return bV.value === option.value;
+       }).length;
+     });
    },
     
    _onInputKeyÛp : function(event, detail) {
