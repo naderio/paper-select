@@ -303,7 +303,7 @@ Polymer({
 
   // Element Behavior
 
-  _valueChanged: function() {
+  _valueChanged: function() { 
     if (this.multiple)
       this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
     else
