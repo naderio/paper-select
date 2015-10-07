@@ -296,7 +296,7 @@ Polymer({
 
   attached: function() {
     this.options = this.options || null;
-    this.initialOptions = this.options;
+    //this.initialOptions = this.options;
     this.bindValue = this.bindValue || this.value || this._defaultValue;
     this.input = this.input || '';
   },
@@ -309,7 +309,7 @@ Polymer({
     else
       this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
     //filter options depending on bindValue
-    this._filter();
+    //this._filter();
     this.$.inputContainer._handleValue(this.$.input);
     this._fixLabelState();
   },
@@ -454,8 +454,8 @@ Polymer({
   //filter options based on the selected value
   _filter: function() {
     var me = this;
-    if(me.initialOptions){
-     me.options = me.initialOptions.filter(function(option){
+    if(me.options.length){
+     me.options = me.options.filter(function(option){
        return !me.bindValue.filter(function(bV) {
          return bV.value === option.value;
        }).length
