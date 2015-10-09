@@ -83,10 +83,6 @@
   background-color: #d34336;
 }
 
-:host #selectedList > * {
-  width: auto;
-}
-
 :host #input {
   position: relative;
   display: inline-block;
