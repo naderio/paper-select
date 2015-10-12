@@ -532,6 +532,7 @@ Polymer({
       this.async(this.clear.bind(this));
       if (this.multiple)
         this.async(this._focus.bind(this));
+      this.fire('select-item');
     },
 
   /**
