@@ -88,8 +88,8 @@ Example:
       <content select="paper-progress"></content>
 
       <paper-menu id="optionsMenu" hidden$="{{!_showOptions}}" i-tabindex="0">
-        <template id="optionsRepeat" is="dom-repeat" items="{{options}}">
-          <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0">
+        <template id="optionsRepeat" is="dom-repeat" items="{{availableList}}">
+          <paper-item on-tap="_optionItemTapped" tabindex="0">
             <span>[[_labelOf(item)]]</span>
             <paper-ripple></paper-ripple>
           </paper-item>
@@ -159,23 +159,19 @@ Polymer({
      * Items set to select from
      */
     options: {
-      type: Array,
-      value: function() {
-        return [];
-      },
-    observer: '_filterSelected' 
+      type: Array
     },
-    initialOptions:{
-      type: Array,
-      value: function() {
-        return [];
-      }
-      
+    initialOptions: {
+      type: Array
     },
     
     opened : {
       type : Boolean,
       value : false
+    },
+    availableList: {
+      type: Array,
+      computed: '_setItems(allowDuplicates,availableOptions,options)'
     },
 
     /**
@@ -186,7 +182,11 @@ Polymer({
       value: '',
       notify: true,
     },
-
+    allowDuplicates: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
     /**
      * Element's selected value
      */
@@ -269,12 +269,12 @@ Polymer({
 
     _showAddAction: {
       computed: '_computeShowAddAction(nonmatching, input)'
-    },
+    }
 
   },
 
   observers: [
-    '_valueChanged(bindValue.*)'
+    '_valueChanged(bindValue.*)','_filterSelected(options, allowDuplicates)'
   ],
 
   listeners: {
@@ -296,20 +296,21 @@ Polymer({
 
   attached: function() {
     this.options = this.options || null;
-    //this.initialOptions = this.options;
+    this.initialOptions = this.options || null;
     this.bindValue = this.bindValue || this.value || this._defaultValue;
     this.input = this.input || '';
   },
 
   // Element Behavior
 
-  _valueChanged: function() { 
+  _valueChanged: function() {
     if (this.multiple)
       this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
     else
       this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
     //filter options depending on bindValue
-    //this._filter();
+    //if (this.allowDuplicates)
+      this._filter();
     this.$.inputContainer._handleValue(this.$.input);
     this._fixLabelState();
   },
@@ -317,7 +318,9 @@ Polymer({
   _computeShowInput: function(multiple, bindValue) {
     return multiple || !bindValue;
   },
-
+  _setItems: function(allowDuplicates,availableOptions,options) {
+    return allowDuplicates ? options : availableOptions;
+  },
   _computeShowOptions: function(options, opened, _showAddAction) {
     return options && options.length && opened|| _showAddAction;
   },
@@ -454,8 +457,8 @@ Polymer({
   //filter options based on the selected value
   _filter: function() {
     var me = this;
-    if(me.options.length){
-     me.options = me.options.filter(function(option){
+    if(me.options){
+     me.availableOptions = me.options.filter(function(option){
        return !me.bindValue.filter(function(bV) {
          return bV.value === option.value;
        }).length
@@ -463,9 +466,9 @@ Polymer({
     }
    },
    
-   _filterSelected: function(options) {
+   _filterSelected: function(options, allowDuplicates) {
      var me = this;
-     if(me.nonmatching || !me.bindValue){
+     if(me.nonmatching || !me.bindValue || allowDuplicates){
        return;
      }
      me.bindValue = me.bindValue.filter(function(bV){
@@ -503,6 +506,7 @@ Polymer({
   _optionItemKeyUp: function(event, detail) {
     if (event.keyCode === 13) { // enter
       this.selectItem(event.model.item);
+      this._stopPropagation();
     }
   },
 
@@ -532,7 +536,6 @@ Polymer({
       this.async(this.clear.bind(this));
       if (this.multiple)
         this.async(this._focus.bind(this));
-      this.fire('select-item');
     },
 
   /**
