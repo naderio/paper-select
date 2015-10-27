@@ -89,7 +89,7 @@ Example:
       <paper-menu id="optionsMenu" hidden$="{{!_showOptions}}" i-tabindex="0">
         <template id="optionsRepeat" is="dom-repeat" items="{{options}}">
           <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0">
-            <span>[[{_labelOf(item)]]</span>
+            <span>[[_labelOf(item)]]</span>
             <paper-ripple></paper-ripple>
           </paper-item>
         </template>
