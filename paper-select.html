@@ -161,7 +161,7 @@ Polymer({
     options: {
       type: Array
     },
-    initialOptions: {
+    availableOptions: {
       type: Array
     },
     
@@ -274,7 +274,7 @@ Polymer({
   },
 
   observers: [
-    '_valueChanged(bindValue.*)','_filterSelected(options, allowDuplicates)'
+    '_valueChanged(bindValue.*)','_setAvailableOptions(options)','_filterSelected(options, allowDuplicates)'
   ],
 
   listeners: {
@@ -296,7 +296,7 @@ Polymer({
 
   attached: function() {
     this.options = this.options || null;
-    this.initialOptions = this.options || null;
+    this.availableOptions = this.options || null;
     this.bindValue = this.bindValue || this.value || this._defaultValue;
     this.input = this.input || '';
   },
@@ -318,6 +318,11 @@ Polymer({
   _computeShowInput: function(multiple, bindValue) {
     return multiple || !bindValue;
   },
+  
+  _setAvailableOptions:function(options) {
+    this.set('availableOptions',options);
+  },
+  
   _setItems: function(allowDuplicates,availableOptions,options) {
     return allowDuplicates ? options : availableOptions;
   },
@@ -457,7 +462,7 @@ Polymer({
   //filter options based on the selected value
   _filter: function() {
     var me = this;
-    if(me.options){
+    if(me.options && me.bindValue){
      me.availableOptions = me.options.filter(function(option){
        return !me.bindValue.filter(function(bV) {
          return bV.value === option.value;
