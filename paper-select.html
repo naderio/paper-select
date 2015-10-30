@@ -193,7 +193,7 @@ Polymer({
     bindValue: {
       type: Object,
       value: null,
-      notify: true,
+      notify: true
     },
 
     /**
@@ -309,8 +309,7 @@ Polymer({
     else
       this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
     //filter options depending on bindValue
-    //if (this.allowDuplicates)
-      this._filter();
+    this._filter();
     this.$.inputContainer._handleValue(this.$.input);
     this._fixLabelState();
   },
@@ -465,7 +464,7 @@ Polymer({
     if(me.options && me.bindValue){
      me.availableOptions = me.options.filter(function(option){
        return !me.bindValue.filter(function(bV) {
-         return bV.value === option.value;
+         return bV === option.value;
        }).length
      });
     }
@@ -478,7 +477,7 @@ Polymer({
      }
      me.bindValue = me.bindValue.filter(function(bV){
        return me.options.filter(function(option) {
-         return bV.value === option.value;
+         return bV === option.value;
        }).length;
      });
    },
@@ -531,11 +530,11 @@ Polymer({
     selectItem : function(item) {
       if (this.multiple) {
         if (!this.bindValue)
-          this.bindValue = [item];
+          this.bindValue = [item.value];
         else
-          this.push('bindValue', item);
+          this.push('bindValue', item.value);
       } else {
-        this.bindValue = item;
+        this.bindValue = item.value;
       }
       this.notifyPath('bindValue', this.bindValue);
       this.async(this.clear.bind(this));
