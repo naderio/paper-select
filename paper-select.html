@@ -123,366 +123,360 @@ Example:
 <script>
 'use strict';
 
-Polymer({
 
-  is: 'paper-select',
+  Polymer({
 
-  behaviors: [
-    Polymer.IronFormElementBehavior,
-    Polymer.PaperInputBehavior,
-    Polymer.IronControlState,
-  ],
+    is: 'paper-select',
 
-  hostAttributes: {
-    role: 'button'
-  },
+    behaviors: [Polymer.IronFormElementBehavior, Polymer.PaperInputBehavior, Polymer.IronControlState, ],
 
-  _defaultValue: null,
+    hostAttributes: {
+      role: 'button'
+    },
 
-  properties: {
+    _defaultValue: null,
 
-    _self: {
-      type: Object,
-      value: function() {
-        return this;
+    properties: {
+
+      _self: {
+        type: Object,
+        value: function() {
+          return this;
+        }
+      },
+
+      _input: {
+        type: Object,
+        value: function() {
+          return this.$.input;
+        }
+      },
+
+      /**
+       * Items set to select from
+       */
+      options: {
+        type: Array
+      },
+      availableOptions: {
+        type: Array
+      },
+
+      opened: {
+        type: Boolean,
+        value: false
+      },
+      availableList: {
+        type: Array,
+        computed: '_setItems(allowDuplicates,availableOptions,options)'
+      },
+
+      /**
+       * Input's search text
+       */
+      input: {
+        type: String,
+        value: '',
+        notify: true,
+      },
+      allowDuplicates: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      /**
+       * Element's selected value
+       */
+      bindValue: {
+        type: Object,
+        value: null,
+        notify: true
+      },
+
+      /**
+       * Multuple selection mode, tags-like 
+       */
+      multiple: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Selection uniqueness constraint
+       */
+      unique: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Select non-matching search text
+       */
+      nonmatching: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Select search text on blur
+       */
+      selectOnBlur: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Keep search text on blur
+       */
+      keepOnBlur: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Field to used for display
+       */
+      labelField: {
+        type: String,
+        value: null,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Field to use for value
+       */
+      valueField: {
+        type: String,
+        value: null,
+        reflectToAttribute: true,
+      },
+
+      _showInput: {
+        computed: '_computeShowInput(multiple, bindValue)'
+      },
+
+      _showOptions: {
+        computed: '_computeShowOptions(options, opened, _showAddAction)'
+      },
+
+      _showAddAction: {
+        computed: '_computeShowAddAction(nonmatching, input)'
       }
+
     },
 
-    _input: {
-      type: Object,
-      value: function() {
-        return this.$.input;
-      }
+    observers: ['_valueChanged(bindValue.*)', '_setAvailableOptions(options)', '_filterSelected(options, allowDuplicates)'],
+
+    listeners: {
+      'input.bind-value-changed': '_stopPropagation'
     },
 
-    /**
-     * Items set to select from
-     */
-    options: {
-      type: Array
-    },
-    availableOptions: {
-      type: Array
-    },
-    
-    opened : {
-      type : Boolean,
-      value : false
-    },
-    availableList: {
-      type: Array,
-      computed: '_setItems(allowDuplicates,availableOptions,options)'
+    // Element Lifecycle
+
+    created: function() {
+      this.toggleClass('paper-input-input', true);
     },
 
-    /**
-     * Input's search text
-     */
-    input: {
-      type: String,
-      value: '',
-      notify: true,
-    },
-    allowDuplicates: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-    /**
-     * Element's selected value
-     */
-    bindValue: {
-      type: Object,
-      value: null,
-      notify: true
+    ready: function() {
+      var self = this;
+      this.$.input.validate = function(value) {
+        return !self.required || !!self.bindValue;
+      };
     },
 
-    /**
-     * Multuple selection mode, tags-like 
-     */
-    multiple: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
+    attached: function() {
+      this.options = this.options || null;
+      this.availableOptions = this.options || null;
+      this.bindValue = this.bindValue || this.value || this._defaultValue;
+      this.input = this.input || '';
     },
 
-    /**
-     * Selection uniqueness constraint
-     */
-    unique: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
+    // Element Behavior
+    _getLabel: function(obj) {
+      var me = this;
+      return _.find(me.options, function(optionObj) {
+        return optionObj.value === obj;
+      });
+    },
+    _valueChanged: function(newValue) {
+      if (this.multiple)
+        this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
+      else
+        this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
+      //filter options depending on bindValue
+      this._filter();
+      this.$.inputContainer._handleValue(this.$.input);
+      this._fixLabelState();
     },
 
-    /**
-     * Select non-matching search text
-     */
-    nonmatching: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
+    _computeShowInput: function(multiple, bindValue) {
+      return multiple || !bindValue;
+    },
+
+    _setAvailableOptions: function(options) {
+      this.set('availableOptions', options);
+    },
+
+    _setItems: function(allowDuplicates, availableOptions, options) {
+      return allowDuplicates ? options : availableOptions;
+    },
+    _computeShowOptions: function(options, opened, _showAddAction) {
+      return options && options.length && opened || _showAddAction;
+    },
+
+    _computeShowAddAction: function(nonmatching, input) {
+      return nonmatching && input.trim();
+    },
+
+    _wrap: function(item) {
+      return {
+        item: item
+      };
     },
 
     /**
-     * Select search text on blur
+     * Resets component.
      */
-    selectOnBlur: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
+    reset: function() {
+      this.bindValue = this._defaultValue;
+      this.clear();
     },
 
     /**
-     * Keep search text on blur
+     * Resets component's input.
      */
-    keepOnBlur: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
+    clear: function() {
+      this.input = '';
+      //this.options = null;
+      this.$.optionsMenu.selected = null;
     },
 
     /**
-     * Field to used for display
+     * Prepares select/option item's display.
+     *
+     * @param {object} Select item data.
+     * @return {string} Label.
      */
-    labelField: {
-      type: String,
-      value: null,
-      reflectToAttribute: true,
+    _labelOf: function(obj) {
+      if (this.labelField === null && this.valueField === null) return obj || '';
+      return typeof obj === 'object' && obj ? obj[this.labelField || this.valueField] : obj || '';
     },
 
-    /**
-     * Field to use for value
-     */
-    valueField: {
-      type: String,
-      value: null,
-      reflectToAttribute: true,
+    _valueOf: function(obj) {
+      if (this.valueField === null) return obj || '';
+      return typeof obj === 'object' && obj ? obj[this.valueField] : obj || '';
     },
 
-    _showInput: {
-      computed: '_computeShowInput(multiple, bindValue)'
+    _formValueOf: function(obj) {
+      if (this.valueField === null && this.labelField === null) return obj || '';
+      return typeof obj === 'object' && obj ? obj[this.valueField || this.labelField] : obj || '';
     },
 
-    _showOptions: {
-      computed: '_computeShowOptions(options, opened, _showAddAction)'
+    _highlight: function(label) {
+      return label.substr(0, this.input.length);
     },
 
-    _showAddAction: {
-      computed: '_computeShowAddAction(nonmatching, input)'
-    }
+    _highlightAfter: function(label) {
+      return label.substr(this.input.length);
+    },
 
-  },
+    openToggle: function() {
+      this.set('opened', !this.opened);
+    },
 
-  observers: [
-    '_valueChanged(bindValue.*)','_setAvailableOptions(options)','_filterSelected(options, allowDuplicates)'
-  ],
+    _focus: function() {
+      this.$.input.focus();
+    },
 
-  listeners: {
-    'input.bind-value-changed': '_stopPropagation'
-  },
+    _fixLabelState: function() {
+      this.$.inputContainer._inputHasContent = !!this.bindValue || !!this.input;
+    },
 
-  // Element Lifecycle
-
-  created: function() {
-    this.toggleClass('paper-input-input', true);
-  },
-
-  ready: function() {
-    var self = this;
-    this.$.input.validate = function(value) {
-      return !self.required || !!self.bindValue;
-    };
-  },
-
-  attached: function() {
-    this.options = this.options || null;
-    this.availableOptions = this.options || null;
-    this.bindValue = this.bindValue || this.value || this._defaultValue;
-    this.input = this.input || '';
-  },
-
-  // Element Behavior
-
-  _valueChanged: function() {
-    if (this.multiple)
-      this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
-    else
-      this.value = this.bindValue ? this._formValueOf(this.bindValue) : '';
-    //filter options depending on bindValue
-    this._filter();
-    this.$.inputContainer._handleValue(this.$.input);
-    this._fixLabelState();
-  },
-
-  _computeShowInput: function(multiple, bindValue) {
-    return multiple || !bindValue;
-  },
-  
-  _setAvailableOptions:function(options) {
-    this.set('availableOptions',options);
-  },
-  
-  _setItems: function(allowDuplicates,availableOptions,options) {
-    return allowDuplicates ? options : availableOptions;
-  },
-  _computeShowOptions: function(options, opened, _showAddAction) {
-    return options && options.length && opened|| _showAddAction;
-  },
-
-  _computeShowAddAction: function(nonmatching, input) {
-    return nonmatching && input.trim();
-  },
-
-  _wrap: function(item) {
-    return {
-      item: item
-    };
-  },
-
-
-  /**
-   * Resets component.
-   */
-  reset: function() {
-    this.bindValue = this._defaultValue;
-    this.clear();
-  },
-
-  /**
-   * Resets component's input.
-   */
-  clear: function() {
-    this.input = '';
-    //this.options = null;
-    this.$.optionsMenu.selected = null;
-  },
-
-  /**
-   * Prepares select/option item's display.
-   *
-   * @param {object} Select item data.
-   * @return {string} Label.
-   */
-  _labelOf: function(obj) {
-    if (this.labelField === null && this.valueField === null)
-      return obj || '';
-    return typeof obj === 'object' && obj ? obj[this.labelField || this.valueField] : obj || '';
-  },
-
-  _valueOf: function(obj) {
-    if (this.valueField === null)
-      return obj || '';
-    return typeof obj === 'object' && obj ? obj[this.valueField] : obj || '';
-  },
-
-  _formValueOf: function(obj) {
-    if (this.valueField === null && this.labelField === null)
-      return obj || '';
-    return typeof obj === 'object' && obj ? obj[this.valueField || this.labelField] : obj || '';
-  },
-
-  _highlight: function(label) {
-    return label.substr(0, this.input.length);
-  },
-
-  _highlightAfter: function(label) {
-    return label.substr(this.input.length);
-  },
-
-  openToggle : function() {
-    this.set('opened',!this.opened);
-  },
-
-  _focus: function() {
-    this.$.input.focus();
-  },
-
-  _fixLabelState: function() {
-    this.$.inputContainer._inputHasContent = !!this.bindValue || !!this.input;
-  },
-
-  _onKeyDown: function(event, detail) {
-    switch (event.keyCode) {
+    _onKeyDown: function(event, detail) {
+      switch (event.keyCode) {
       case 38: // up arrow
       case 40: // down arrow
         event.preventDefault();
         event.stopPropagation();
         break;
-    }
-  },
+      }
+    },
 
-  _cancelEvent: function(event, detail) {
-    event.preventDefault();
-    event.stopPropagation();
-  },
+    _cancelEvent: function(event, detail) {
+      event.preventDefault();
+      event.stopPropagation();
+    },
 
-  _preventDefault: function(event) {
-    event.preventDefault();
-  },
+    _preventDefault: function(event) {
+      event.preventDefault();
+    },
 
-  _stopPropagation: function(event) {
-    event.stopPropagation();
-  },
+    _stopPropagation: function(event) {
+      event.stopPropagation();
+    },
 
-  _cancelKeyboardEventScroll: function(event, detail) {
-    detail.keyboardEvent.preventDefault();
-  },
+    _cancelKeyboardEventScroll: function(event, detail) {
+      detail.keyboardEvent.preventDefault();
+    },
 
-  _elementTapped: function(event, detail) {
-    this._focus();
-    this.openToggle();
-  },
+    _elementTapped: function(event, detail) {
+      this._focus();
+      this.openToggle();
+    },
 
-  _removeSelectedItemTapped: function(event, detail) {
-    if (this.multiple) {
-      var value = Polymer.dom(event).rootTarget.parentElement.value;
-      var index = this.bindValue.indexOf(event.model.item);
-      if (this.bindValue.length === 1)
+    _removeSelectedItemTapped: function(event, detail) {
+      if (this.multiple) {
+        var value = Polymer.dom(event).rootTarget.parentElement.value;
+        var index = this.bindValue.indexOf(event.model.item);
+        if (this.bindValue.length === 1)
+          this.bindValue = this._defaultValue;
+        else
+          this.splice('bindValue', index, 1);
+      } else {
         this.bindValue = this._defaultValue;
-      else
-        this.splice('bindValue', index, 1);
-    } else {
-      this.bindValue = this._defaultValue;
-    }
-    this.notifyPath('bindValue', this.bindValue);
-    this.async(this.clear.bind(this));
-    this.async(this._focus.bind(this));
-  },
+      }
+      this.notifyPath('bindValue', this.bindValue);
+      this.async(this.clear.bind(this));
+      this.async(this._focus.bind(this));
+    },
 
-  _onInputKeyDown: function(event, detail) {
-    switch (event.keyCode) {
+    _onInputKeyDown: function(event, detail) {
+      switch (event.keyCode) {
       case 188: // comma
         if (this.nonmatching && this.input.trim()) {
           event.preventDefault();
         }
         break;
-    }
-  },
-  //filter options based on the selected value
-  _filter: function() {
-    var me = this;
-    if(me.options && me.bindValue){
-     me.availableOptions = me.options.filter(function(option){
-       return !me.bindValue.filter(function(bV) {
-         return bV === option.value;
-       }).length
-     });
-    }
-   },
-   
-   _filterSelected: function(options, allowDuplicates) {
-     var me = this;
-     if(me.nonmatching || !me.bindValue || allowDuplicates){
-       return;
-     }
-     me.bindValue = me.bindValue.filter(function(bV){
-       return me.options.filter(function(option) {
-         return bV === option.value;
-       }).length;
-     });
-   },
-    
-   _onInputKeyÛp : function(event, detail) {
+      }
+    },
+    //filter options based on the selected value
+    _filter: function() {
+      var me = this;
+      if (me.options && me.bindValue) {
+        me.availableOptions = me.options.filter(function(option) {
+          return !me.bindValue.filter(function(bV) {
+            return (typeof bV === 'object' && bV ? bV.value : bV) === option.value;
+          }).length
+        });
+      }
+    },
+
+    _filterSelected: function(options, allowDuplicates) {
+      var me = this;
+      if (me.nonmatching || !me.bindValue || allowDuplicates) { return; }
+      me.bindValue = me.bindValue.filter(function(bV) {
+        return me.options.filter(function(option) {
+          return (typeof bV === 'object' && bV ? bV.value : bV) === option.value;
+        }).length;
+      });
+    },
+
+    _onInputKeyÛp: function(event, detail) {
       switch (event.keyCode) {
       case 8: // backspace
         if (this.multiple && this.input.length === 0 && this.bindValue && this.bindValue.length > 0) {
@@ -496,51 +490,50 @@ Polymer({
           this._addItem();
         }
         break;
-    }
-  },
+      }
+    },
 
-  _focusOnOptionsPressed: function(event, detail) {
-    this.$.optionsMenu.focus();
-  },
+    _focusOnOptionsPressed: function(event, detail) {
+      this.$.optionsMenu.focus();
+    },
 
-  _optionItemTapped: function(event, detail) {
-    this.selectItem(event.model.item);
-  },
-
-  _optionItemKeyUp: function(event, detail) {
-    if (event.keyCode === 13) { // enter
+    _optionItemTapped: function(event, detail) {
       this.selectItem(event.model.item);
-      this._stopPropagation();
-    }
-  },
+    },
 
-  _addItem: function() {
-    var input = this.input.trim();
-    if (!input)
-      return;
-    var detail = {
-      value: input
-    };
-    this.fire('adding-item', detail);
-    this.async(function() {
-      this.selectItem(detail.value);
-    });
-  },
+    _optionItemKeyUp: function(event, detail) {
+      if (event.keyCode === 13) { // enter
+        this.selectItem(event.model.item);
+        this._stopPropagation();
+      }
+    },
 
-    selectItem : function(item) {
+    _addItem: function() {
+      var input = this.input.trim();
+      if (!input) return;
+      var detail = {
+        value: input
+      };
+      this.fire('adding-item', detail);
+      this.async(function() {
+        this.selectItem(detail.value);
+      });
+    },
+
+    selectItem: function(item) {
       if (this.multiple) {
         if (!this.bindValue)
-          this.bindValue = [item.value];
+          this.bindValue = item && typeof item === 'object' ? [item.value] : [item];
         else
-          this.push('bindValue', item.value);
+          this.push('bindValue', (item && typeof item === 'object' ? item.value : item));
       } else {
-        this.bindValue = item.value;
+        this.bindValue = item && typeof item === 'object' ? [item.value] : [item];
       }
       this.notifyPath('bindValue', this.bindValue);
       this.async(this.clear.bind(this));
-      if (this.multiple)
-        this.async(this._focus.bind(this));
-    },
+      if (this.multiple) this.async(this._focus.bind(this));
+      this.fire('select-item', item);
+    }
 
   /**
    * The `adding-item` event is fired whenever an item is added.
@@ -549,6 +542,5 @@ Polymer({
    * @detail {{value: String}}
    */
 
-   
-});
+  });
 </script>
