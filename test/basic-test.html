@@ -23,50 +23,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- You can use the document as a place to set up your fixtures. -->
     <paper-select id="select-1"></paper-select>
-
+	 
     <script>
       var select1 = document.querySelector('paper-select#select-1');
-
-      suite('<paper-select> default', function() {
-
-        test('defines "data" property', function() {
-          assert.isArray(select1.data, 'not an array');
-          assert.lengthOf(select1.data, 0, 'array not empty');
+      
+      describe('<paper-select> default', function() {
+        it('defines "options" property', function() {
+          assert.isArray(select1.options, 'not an array');
+          assert.lengthOf(select1.options, 0, 'array not empty');
         });
 
-        test('defines "input" property', function() {
+        it('defines "input" property', function() {
           assert.equal(select1.input, '');
         });
 
-        test('defines "bindValue" property', function() {
+        it('defines "bindValue" property', function() {
           assert.equal(select1.bindValue, null);
         });
 
-        test('defines "value" property', function() {
+        it('defines "value" property', function() {
           assert.equal(select1.value, '');
         });
-
-        // test('says hello', function() {
-        //   assert.equal(select1.sayHello(), 'paper-select says, Hello World!');
-
-        //   var greetings = select1.sayHello('greetings Earthlings');
-        //   assert.equal(greetings, 'paper-select says, greetings Earthlings');
-        // });
-
-        // test('fires lasers', function(done) {
-        //   select1.addEventListener('paper-select-lasers', function(event) {
-        //     assert.equal(event.detail.sound, 'Pew pew!');
-        //     done();
-        //   });
-        //   select1.fireLasers();
-        // });
+        
+        it('defines "opened" property', function() {
+          assert.equal(select1.opened, false);
+        });
 
       });
 
-      suite('<paper-select> multipe', function() {});
-
-      suite('<paper-select> one', function() {});
-      
     </script>
 
   </body>

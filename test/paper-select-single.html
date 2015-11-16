@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../paper-select.html">
+  </head>
+  <body>
+
+    <!-- You can use the document as a place to set up your fixtures. -->
+    <paper-select id="select-single" value-field="id" label-field="name">
+
+    <script>
+      var selectSingle = document.querySelector('paper-select#select-single');
+
+      describe('single', function() {
+
+        it('check for "multiple" attribute', function() {
+          assert.isFalse(selectSingle.multiple);
+          selectSingle.reset();
+        });
+
+        it('set selection via bindValue property', function(done) {
+          selectSingle.set('options',[{id: 1,name: 'foo'},{id: 2,name: 'bar'},{id: 3,name: 'vaz'}]);
+          selectSingle.reset();
+          setTimeout(function() {
+            // set selectedValues
+            selectSingle.bindValue = 1;
+            // check selectedItems
+            assert.lengthOf(selectSingle.availableList, 2);
+            selectSingle.reset();
+            done();
+          },100);
+        });
+        
+        it('set selection via tap', function(done) {
+          selectSingle.set('options',[{id: 1,name: 'foo'},{id: 2,name: 'bar'},{id: 3,name: 'vaz'}]);
+          selectSingle.reset();
+          setTimeout(function() {
+            selectSingle.bindValue = null;
+            // set selectedValues
+            selectSingle.querySelectorAll('#optionsMenu paper-item')[0].dispatchEvent(new CustomEvent('tap', {
+              bubbles: true
+            }));
+            selectSingle.querySelectorAll('#optionsMenu paper-item')[1].dispatchEvent(new CustomEvent('tap', {
+              bubbles: true
+            }));
+            // check selectedItems
+            assert.isNotArray(selectSingle.bindValue,'bindValue for single select is an array');
+            selectSingle.reset();
+            done();
+          },100);
+        });
+      });
+        </script>
+
+  </body>
+</html>
