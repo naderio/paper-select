@@ -156,7 +156,8 @@ Example:
        * Items set to select from
        */
       options: {
-        type: Array
+        type: Array,
+        value : []
       },
       availableOptions: {
         type: Array
@@ -363,8 +364,10 @@ Example:
      * @return {string} Label.
      */
     _labelOf: function(obj) {
-      if (this.labelField === null && this.valueField === null) return obj || '';
-      return typeof obj === 'object' && obj ? obj[this.labelField || this.valueField] : obj || '';
+      var me = this;
+      return me.options.filter(function(option) {
+        return typeof obj === 'object' && obj ? obj[me.valueField] === option[me.valueField] : obj === option[me.valueField];
+      })[0][me.labelField];   
     },
 
     _valueOf: function(obj) {
@@ -459,9 +462,13 @@ Example:
       var me = this;
       if (me.options && me.bindValue) {
         me.availableOptions = me.options.filter(function(option) {
-          return !me.bindValue.filter(function(bV) {
-            return (typeof bV === 'object' && bV ? bV.value : bV) === option.value;
-          }).length
+          if (me.bindValue instanceof Array) {
+            return !me.bindValue.filter(function(bV) {
+              return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === option[me.valueField];
+            }).length;
+          } else {
+            return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) !== option[me.valueField];
+          }
         });
       }
     },
@@ -469,11 +476,17 @@ Example:
     _filterSelected: function(options, allowDuplicates) {
       var me = this;
       if (me.nonmatching || !me.bindValue || allowDuplicates) { return; }
-      me.bindValue = me.bindValue.filter(function(bV) {
-        return me.options.filter(function(option) {
-          return (typeof bV === 'object' && bV ? bV.value : bV) === option.value;
-        }).length;
-      });
+      if(me.multiple){
+        me.bindValue = me.bindValue.filter(function(bV) {
+          return me.options.filter(function(option) {
+            return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === option[me.valueField];
+          }).length;
+        });
+      } else {
+        me.bindValue = (me.options.filter(function(option) {
+          return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) === option[me.valueField];
+        }).length) ? null : me.bindValue;
+      }      
     },
 
     _onInputKeyÛp: function(event, detail) {
@@ -523,11 +536,11 @@ Example:
     selectItem: function(item) {
       if (this.multiple) {
         if (!this.bindValue)
-          this.bindValue = item && typeof item === 'object' ? [item.value] : [item];
+          this.bindValue = item && typeof item === 'object' ? [item[this.valueField]] : [item];
         else
-          this.push('bindValue', (item && typeof item === 'object' ? item.value : item));
+          this.push('bindValue', (item && typeof item === 'object' ? item[this.valueField] : item));
       } else {
-        this.bindValue = item && typeof item === 'object' ? [item.value] : [item];
+        this.bindValue = item && typeof item === 'object' ? item[this.valueField] : item;
       }
       this.notifyPath('bindValue', this.bindValue);
       this.async(this.clear.bind(this));
