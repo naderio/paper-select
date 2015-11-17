@@ -79,9 +79,9 @@ Example:
         </template>
 
         <input id="input" is="iron-input" type="text" hidden$="{{!_showInput}}" tabindex="0" class="paper-input-input" value="{{input::input}}" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" i-invalid="{{invalid}}" i-validator="[[validator]]" i-required$="[[required]]" autofocus$="[[autofocus]]" i-readonly$="[[readonly]]" on-keydown="_onInputKeyDown" on-keyup="_onInputKeyÛp">
-        <paper-icon-button icon="arrow-drop-down"></paper-icon-button>
 
         <a id="clearButton" hidden$="{{!input}}" on-tap="clear" hidden$="[[readonly]]"></a>
+        <paper-icon-button id="dropButton" icon="arrow-drop-down" on-tap="_openToggle"></paper-icon-button>
 
       </div>
 
@@ -244,7 +244,7 @@ Example:
        */
       labelField: {
         type: String,
-        value: null,
+        value: 'name',
         reflectToAttribute: true,
       },
 
@@ -253,7 +253,7 @@ Example:
        */
       valueField: {
         type: String,
-        value: null,
+        value: 'id',
         reflectToAttribute: true,
       },
 
@@ -298,12 +298,6 @@ Example:
     },
 
     // Element Behavior
-    _getLabel: function(obj) {
-      var me = this;
-      return _.find(me.options, function(optionObj) {
-        return optionObj.value === obj;
-      });
-    },
     _valueChanged: function(newValue) {
       if (this.multiple)
         this.value = this.bindValue ? this.bindValue.map(this._formValueOf.bind(this)).join(',') : '';
@@ -364,10 +358,21 @@ Example:
      * @return {string} Label.
      */
     _labelOf: function(obj) {
-      var me = this;
-      return me.options.filter(function(option) {
-        return typeof obj === 'object' && obj ? obj[me.valueField] === option[me.valueField] : obj === option[me.valueField];
-      })[0][me.labelField];   
+      var me = this,label;
+      if(!me.options.length) { return; }
+      label = me.options.filter(function(option) {
+        return typeof obj === 'object' && obj ? obj[me.valueField] === me._getOption(option) : obj === me._getOption(option);
+      })[0];
+      if(typeof me.options[0] === 'string'){
+        return label;
+      } else {
+        return label[me.labelField];
+      }
+    },
+    
+    
+    _getOption: function(option) {
+      return typeof option === 'object' && option ? option[this.valueField] : option;
     },
 
     _valueOf: function(obj) {
@@ -388,7 +393,7 @@ Example:
       return label.substr(this.input.length);
     },
 
-    openToggle: function() {
+    _openToggle: function() {
       this.set('opened', !this.opened);
     },
 
@@ -429,7 +434,7 @@ Example:
 
     _elementTapped: function(event, detail) {
       this._focus();
-      this.openToggle();
+      //this.openToggle();
     },
 
     _removeSelectedItemTapped: function(event, detail) {
@@ -458,16 +463,17 @@ Example:
       }
     },
     //filter options based on the selected value
+
     _filter: function() {
       var me = this;
       if (me.options && me.bindValue) {
         me.availableOptions = me.options.filter(function(option) {
           if (me.bindValue instanceof Array) {
             return !me.bindValue.filter(function(bV) {
-              return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === option[me.valueField];
+              return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === me._getOption(option);
             }).length;
           } else {
-            return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) !== option[me.valueField];
+            return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) !== me._getOption(option);
           }
         });
       }
@@ -476,17 +482,17 @@ Example:
     _filterSelected: function(options, allowDuplicates) {
       var me = this;
       if (me.nonmatching || !me.bindValue || allowDuplicates) { return; }
-      if(me.multiple){
+      if (me.multiple) {
         me.bindValue = me.bindValue.filter(function(bV) {
           return me.options.filter(function(option) {
-            return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === option[me.valueField];
+            return (typeof bV === 'object' && bV ? bV[me.valueField] : bV) === me._getOption(option);
           }).length;
         });
       } else {
         me.bindValue = (me.options.filter(function(option) {
-          return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) === option[me.valueField];
+          return (typeof me.bindValue === 'object' && me.bindValue ? me.bindValue[me.valueField] : me.bindValue) === me._getOption(option);
         }).length) ? null : me.bindValue;
-      }      
+      }
     },
 
     _onInputKeyÛp: function(event, detail) {
