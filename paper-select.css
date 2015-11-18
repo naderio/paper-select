@@ -2,10 +2,14 @@
   display: block;
   box-sizing: border-box;
   position: relative;
+  
+  @apply(--paper-select);
 }
 
 :host([disabled]) {
   pointer-events: none;
+  
+  @apply(--paper-select-disabled);
 }
 
 :host #selectedList {
@@ -30,6 +34,8 @@
   cursor: default;
   white-space: nowrap;
   text-overflow: ellipsis;
+  
+  @apply(--paper-select-item);
 }
 
 :host([multiple]) #selectedList {
@@ -63,6 +69,8 @@
   background-color: #666;
   text-decoration: none;
   cursor: pointer;
+  
+  @apply(--paper-select-remove-icon);
 }
 
 :host([multiple]) #selectedList > .selected-item > a {
@@ -73,10 +81,6 @@
 
 :host #selectedList > .selected-item > a:hover {
   background-color: #d34336;
-}
-
-:host #selectedList > * {
-  width: auto;
 }
 
 :host #input {
@@ -97,8 +101,8 @@
 :host #clearButton {
   display: inline-block;
   position: absolute;
-  bottom: 9px;
-  right: 8px;
+  bottom: 10px;
+  right: 30px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -106,6 +110,13 @@
   transform: translateY(-50%);
   background-color: #666;
   text-decoration: none;
+  cursor: pointer;
+}
+
+:host #dropButton {
+  display: inline-block;
+  position: absolute;
+  right: 0;
   cursor: pointer;
 }
 
@@ -117,12 +128,18 @@
   padding: 0;
   top: 100%;
   z-index: 1;
+  max-height: 240px;
+  overflow-y: auto;
+  
+  @apply(--paper-select-menu);
 }
 
 :host paper-menu paper-item,
 :host ::content paper-item {
   position: relative;
   cursor: pointer;
+  
+  @apply(--paper-select-menu-item);
 }
 
 :host ::content paper-progress {
