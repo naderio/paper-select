@@ -81,7 +81,7 @@ Example:
         <input id="input" is="iron-input" type="text" hidden$="{{!_showInput}}" tabindex="0" class="paper-input-input" value="{{input::input}}" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" i-invalid="{{invalid}}" i-validator="[[validator]]" i-required$="[[required]]" autofocus$="[[autofocus]]" i-readonly$="[[readonly]]" on-keydown="_onInputKeyDown" on-keyup="_onInputKeyÛp">
 
         <a id="clearButton" hidden$="{{!input}}" on-tap="clear" hidden$="[[readonly]]"></a>
-        <paper-icon-button id="dropButton" icon="arrow-drop-down" on-tap="_openToggle"></paper-icon-button>
+        <paper-icon-button id="dropButton" icon="arrow-drop-down"></paper-icon-button>
 
       </div>
 
@@ -434,7 +434,7 @@ Example:
 
     _elementTapped: function(event, detail) {
       this._focus();
-      //this.openToggle();
+      this._openToggle();
     },
 
     _removeSelectedItemTapped: function(event, detail) {
