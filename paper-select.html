@@ -274,7 +274,8 @@ Example:
     observers: ['_valueChanged(bindValue.*)', '_setAvailableOptions(options)', '_filterSelected(options, allowDuplicates)'],
 
     listeners: {
-      'input.bind-value-changed': '_stopPropagation'
+      'input.bind-value-changed': '_stopPropagation',
+      'blur': '_close'
     },
 
     // Element Lifecycle
@@ -399,6 +400,10 @@ Example:
 
     _focus: function() {
       this.$.input.focus();
+    },
+
+    _close: function() {
+      this.set('opened', false);
     },
 
     _fixLabelState: function() {
