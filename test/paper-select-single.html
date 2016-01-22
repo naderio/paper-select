@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       describe('single', function() {
 
         it('check for "multiple" attribute', function() {
-          assert.isFalse(selectSingle.multiple);
+          expect(selectSingle.multiple).to.be.false;
           selectSingle.reset();
         });
 
@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // set selectedValues
             selectSingle.bindValue = 1;
             // check selectedItems
-            assert.lengthOf(selectSingle.availableList, 2);
+            expect(selectSingle.availableList).to.have.length(2);
             selectSingle.reset();
             done();
           },100);
@@ -60,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               bubbles: true
             }));
             // check selectedItems
-            assert.isNotArray(selectSingle.bindValue,'bindValue for single select is an array');
+            expect(selectSingle.bindValue).to.not.be.an('array');
             selectSingle.reset();
             done();
           },100);

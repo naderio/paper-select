@@ -9,49 +9,60 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+<script src="../../web-component-tester/browser.js"></script>
 
-    <!-- Step 1: import the element to test -->
-    <link rel="import" href="../paper-select.html">
-  </head>
-  <body>
+<!-- Step 1: import the element to test -->
+<link rel="import" href="../paper-select.html">
+</head>
+<body>
 
-    <!-- You can use the document as a place to set up your fixtures. -->
-    <paper-select id="select-1"></paper-select>
-	 
-    <script>
-      var select1 = document.querySelector('paper-select#select-1');
-      
-      describe('<paper-select> default', function() {
-        it('defines "options" property', function() {
-          assert.isArray(select1.options, 'not an array');
-          assert.lengthOf(select1.options, 0, 'array not empty');
+	<!-- You can use the document as a place to set up your fixtures. -->
+	<paper-select id="select-1"></paper-select>
+
+	<script>
+    var select1 = document.querySelector('paper-select#select-1');
+
+    describe('<paper-select> default', function() {
+
+      it('defines "options" property', function() {
+        setTimeout(function() {
+          expect(select1.options).to.be.an('array');
+          expect(select1.options).to.have.length(0);
         });
-
-        it('defines "input" property', function() {
-          assert.equal(select1.input, '');
-        });
-
-        it('defines "bindValue" property', function() {
-          assert.equal(select1.bindValue, null);
-        });
-
-        it('defines "value" property', function() {
-          assert.equal(select1.value, '');
-        });
-        
-        it('defines "opened" property', function() {
-          assert.equal(select1.opened, false);
-        });
-
       });
 
-    </script>
+      it('defines "input" property', function() {
+        setTimeout(function() {
+          expect(select1.input).not.to.be.undefined;
+        });
+      });
 
-  </body>
+      it('defines "bindValue" property', function() {
+        setTimeout(function() {
+          expect(select1.bindValue).to.equal.null;
+        });
+      });
+
+      it('defines "value" property', function() {
+        setTimeout(function() {
+          expect(select1.value).to.be.empty;
+          expect(select1.value).to.be.a('string');
+        });
+      });
+
+      it('defines "opened" property', function() {
+        setTimeout(function() {
+          expect(select1.opened).to.be.false;
+        });
+      });
+    });
+  </script>
+
+</body>
 </html>
