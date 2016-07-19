@@ -74,6 +74,14 @@ Polymer({
     },
 
     /**
+     * Unique value field name for unique value select
+     */
+    uniqueField : {
+      type: String,
+      value : 'name'
+    },
+
+    /**
      * Select non-matching search text
      */
     nonmatching: {
@@ -423,8 +431,19 @@ Polymer({
     if (this.multiple) {
       if (!this.bindValue)
         this.set('bindValue', [item]);
-      else
-        this.push('bindValue', item);
+      else {
+        if(this.unique) {
+          var self = this;
+          var existItems = this.bindValue.filter(function(addedItem) {
+            if(!addedItem[self.uniqueField] && !item[self.uniqueField])
+              return false;
+            return addedItem[self.uniqueField].toLowerCase().indexOf(item[self.uniqueField]) === 0;
+          });
+          if(existItems.length == 0)
+            this.push('bindValue', item);
+        } else
+          this.push('bindValue', item);
+      }
     } else {
       this.set('bindValue', item);
     }
