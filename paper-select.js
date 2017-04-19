@@ -375,11 +375,12 @@ Polymer({
     if (this.multiple) {
       // var value = Polymer.dom(event).rootTarget.parentElement.value;
       var index = this.bindValue.indexOf(event.model.item);
-      if (this.bindValue.length === 1) {
-        this.set('bindValue', this._defaultValue);
-      } else {
-        this.splice('bindValue', index, 1);
-      }
+      // if (this.bindValue.length === 1) {
+      //   this.set('bindValue', this._defaultValue);
+      // } else {
+      //   this.splice('bindValue', index, 1);
+      // }
+      this.splice('bindValue', index, 1);
     } else {
       this.set('bindValue', this._defaultValue);
     }
