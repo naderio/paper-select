@@ -120,6 +120,8 @@
   z-index: 1;
   max-height: 240px;
   overflow-y: auto;
+  
+  @apply(--paper-select-menu);
 }
 
 :host paper-menu paper-item,
