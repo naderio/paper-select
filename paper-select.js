@@ -55,7 +55,7 @@ Polymer({
     },
 
     /**
-     * Multuple selection mode, tags-like 
+     * Multuple selection mode, tags-like
      */
     multiple: {
       type: Boolean,
@@ -155,10 +155,16 @@ Polymer({
       computed: '_computeShowAddAction(nonmatching, input)'
     },
 
+    isDisplayLabel:{
+      type:Boolean,
+      value:true,
+    }
+
   },
 
   observers: [
-    '_valueChanged(bindValue.*)'
+    '_valueChanged(bindValue.*)',
+    'bindValueOrInputChanged(bindValue.*,input)',
   ],
 
   listeners: {
@@ -169,7 +175,15 @@ Polymer({
   },
 
   // Element Lifecycle
-
+  bindValueOrInputChanged:function () {
+      if(this.bindValue && this.bindValue.length > 0){
+        this.isDisplayLabel = false;
+      }else if (this.input){
+        this.isDisplayLabel = false;
+      }else{
+        this.isDisplayLabel = true;
+      }
+  },
   created: function () {
     this.toggleClass('paper-input-input', true);
   },
