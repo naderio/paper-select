@@ -51,7 +51,7 @@ Example:
   <link rel="import" type="css" href="./paper-select.css">
 
   <template>
-
+  
     <paper-input-container id="inputContainer"
       no-label-float="[[noLabelFloat]]"
       always-float-label="[[alwaysFloatLabel]]"
@@ -115,18 +115,18 @@ Example:
 
       <paper-menu id="optionsMenu" hidden$="{{!_showOptions}}" i-tabindex="0">
         <template id="optionsRepeat" is="dom-repeat" items="{{options}}">
-          <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0">
+          <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0" disabled$="{{item.isDisable}}">
             <!-- <span>[[_labelOf(item)]]</span> -->
             <span inner-h-t-m-l="[[_labelOf(item)]]"></span>
             <paper-ripple></paper-ripple>
           </paper-item>
         </template>
-        <content select="paper-item">
+      <!--   <content select="paper-item">
           <paper-item class="add-action" on-tap="_addItem" on-keydown="_addItemOnEnter" hidden$="{{!_showAddAction}}" disabled$="{{!_showAddAction}}">
             <span>{{addActionLabel}}</span>&nbsp;<strong>{{input}}</strong>
             <paper-ripple></paper-ripple>
           </paper-item>
-        </content>
+        </content> -->
       </paper-menu>
 
       <template is="dom-if" if="[[errorMessage]]">
