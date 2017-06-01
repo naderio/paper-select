@@ -55,7 +55,7 @@ Polymer({
     },
 
     /**
-     * Multuple selection mode, tags-like 
+     * Multuple selection mode, tags-like
      */
     multiple: {
       type: Boolean,
@@ -155,10 +155,16 @@ Polymer({
       computed: '_computeShowAddAction(nonmatching, input)'
     },
 
+    isDisplayLabel:{
+      type:Boolean,
+      value:true,
+    }
+
   },
 
   observers: [
-    '_valueChanged(bindValue.*)'
+    '_valueChanged(bindValue.*)',
+    'bindValueOrInputChanged(bindValue.*,input)',
   ],
 
   listeners: {
@@ -169,7 +175,15 @@ Polymer({
   },
 
   // Element Lifecycle
-
+  bindValueOrInputChanged:function () {
+      if(this.bindValue && this.bindValue.length > 0){
+        this.isDisplayLabel = false;
+      }else if (this.input){
+        this.isDisplayLabel = false;
+      }else{
+        this.isDisplayLabel = true;
+      }
+  },
   created: function () {
     this.toggleClass('paper-input-input', true);
   },
@@ -375,11 +389,12 @@ Polymer({
     if (this.multiple) {
       // var value = Polymer.dom(event).rootTarget.parentElement.value;
       var index = this.bindValue.indexOf(event.model.item);
-      if (this.bindValue.length === 1) {
-        this.set('bindValue', this._defaultValue);
-      } else {
-        this.splice('bindValue', index, 1);
-      }
+      // if (this.bindValue.length === 1) {
+      //   this.set('bindValue', this._defaultValue);
+      // } else {
+      //   this.splice('bindValue', index, 1);
+      // }
+      this.splice('bindValue', index, 1);
     } else {
       this.set('bindValue', this._defaultValue);
     }

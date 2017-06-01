@@ -13,12 +13,12 @@ A proper select input for the Polymer world.
 
 Example:
 
-    <paper-select id="select-input-1" 
-      multiple 
+    <paper-select id="select-input-1"
+      multiple
       label-field="name"
       bind-value="{{value}}"
       on-input-changed="inputChanged"
-      nonmatching on-adding-item="addItem" select-on-blur 
+      nonmatching on-adding-item="addItem" select-on-blur
       label="Select your favorite programming language"
     >
     </paper-select>
@@ -33,7 +33,7 @@ Example:
       else
         e.target.options = [];
     };
-    
+
     template.addItem = function(e) {
       var input = (e.detail.value || '').trim()
       e.detail.value = {
@@ -51,17 +51,17 @@ Example:
   <link rel="import" type="css" href="./paper-select.css">
 
   <template>
-
-    <paper-input-container id="inputContainer" 
-      no-label-float="[[noLabelFloat]]" 
-      always-float-label="[[alwaysFloatLabel]]" 
+  
+    <paper-input-container id="inputContainer"
+      no-label-float="[[noLabelFloat]]"
+      always-float-label="[[alwaysFloatLabel]]"
       auto-validate$="[[autoValidate]]"
-      disabled$="[[disabled]]" 
-      invalid="[[invalid]]" 
+      disabled$="[[disabled]]"
+      invalid="[[invalid]]"
       _input-selector="#input"
     >
 
-      <label hidden$="[[!label]]">[[label]]</label>
+      <label hidden$="[[!isDisplayLabel]]">[[label]]</label>
 
       <div id="selectedContainer" on-tap="_elementTapped">
 
@@ -72,7 +72,9 @@ Example:
               <div class="selected-item">
                 <!-- <span>[[_labelOf(item)]]</span> -->
                 <span inner-h-t-m-l="[[_labelOf(item)]]"></span>
-                <a on-tap="_removeSelectedItemTapped" hidden$="[[readonly]]"></a>
+                <!--<a on-tap="_removeSelectedItemTapped" hidden$="[[readonly]]"></a>-->
+                <paper-icon-button suffix on-tap="_removeSelectedItemTapped" icon="clear" alt="clear" title="clear" class="input-remover" hidden$="[[readonly]]">
+                </paper-icon-button>
               </div>
             </template>
           </template>
@@ -87,21 +89,21 @@ Example:
 
         </template>
 
-        <input id="input" is="iron-input" 
-          type="text" 
-          hidden$="{{!_showInput}}" 
-          tabindex="0" 
-          class="paper-input-input" 
-          value="{{input::input}}" 
-          aria-labelledby$="[[_ariaLabelledBy]]" 
-          aria-describedby$="[[_ariaDescribedBy]]" 
-          disabled$="[[disabled]]" 
-          i-invalid="{{invalid}}" 
-          i-validator="[[validator]]" 
-          i-required$="[[required]]" 
-          autofocus$="[[autofocus]]" 
-          i-readonly$="[[readonly]]" 
-          on-keydown="_onInputKeyDown" 
+        <input id="input" is="iron-input"
+          type="text"
+          hidden$="{{!_showInput}}"
+          tabindex="0"
+          class="paper-input-input"
+          value="{{input::input}}"
+          aria-labelledby$="[[_ariaLabelledBy]]"
+          aria-describedby$="[[_ariaDescribedBy]]"
+          disabled$="[[disabled]]"
+          i-invalid="{{invalid}}"
+          i-validator="[[validator]]"
+          i-required$="[[required]]"
+          autofocus$="[[autofocus]]"
+          i-readonly$="[[readonly]]"
+          on-keydown="_onInputKeyDown"
           on-keyup="_onInputKeyÛp"
         >
 
@@ -113,18 +115,18 @@ Example:
 
       <paper-menu id="optionsMenu" hidden$="{{!_showOptions}}" i-tabindex="0">
         <template id="optionsRepeat" is="dom-repeat" items="{{options}}">
-          <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0">
+          <paper-item on-tap="_optionItemTapped" on-keydown="_optionItemKeyUp" tabindex="0" disabled$="{{item.isDisable}}">
             <!-- <span>[[_labelOf(item)]]</span> -->
             <span inner-h-t-m-l="[[_labelOf(item)]]"></span>
             <paper-ripple></paper-ripple>
           </paper-item>
         </template>
-        <content select="paper-item">
+      <!--   <content select="paper-item">
           <paper-item class="add-action" on-tap="_addItem" on-keydown="_addItemOnEnter" hidden$="{{!_showAddAction}}" disabled$="{{!_showAddAction}}">
             <span>{{addActionLabel}}</span>&nbsp;<strong>{{input}}</strong>
             <paper-ripple></paper-ripple>
           </paper-item>
-        </content>
+        </content> -->
       </paper-menu>
 
       <template is="dom-if" if="[[errorMessage]]">

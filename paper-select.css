@@ -15,15 +15,16 @@
 }
 
 :host #selectedContainer > .selected-item {
-  display: block;
+  display: flex !important;
+  padding-right: 0 !important;
   position: relative;
   box-sizing: border-box;
   vertical-align: middle;
   height: 34px;
   line-height: 34px;
-  border-radius: 17px;
+  /*border-radius: 17px;*/
   padding-left: 12px;
-  padding-right: 20px;
+  /*padding-right: 20px;*/
   text-overflow: ellipsis;
   overflow: hidden;
   background-color: #E7E7E7;
@@ -31,6 +32,12 @@
   cursor: default;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+:host #selectedContainer > .selected-item > .input-remover{
+  max-width: 2rem;
+  max-height: 2rem;
+  display: flex;
 }
 
 :host([multiple]) #selectedContainer {
@@ -120,6 +127,8 @@
   z-index: 1;
   max-height: 240px;
   overflow-y: auto;
+
+  @apply(--paper-select-menu);
 }
 
 :host paper-menu paper-item,
