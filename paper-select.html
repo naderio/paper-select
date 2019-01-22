@@ -70,8 +70,8 @@ Example:
           <template is="dom-if" if="{{multiple}}">
             <template is="dom-repeat" items="{{bindValue}}">
               <div class="selected-item">
-                <!-- <span>[[_labelOf(item)]]</span> -->
-                <span inner-h-t-m-l="[[_labelOf(item)]]"></span>
+                <span>[[_labelOf(item)]]</span>
+                <!-- <span inner-h-t-m-l="[[_labelOf(item)]]"></span> -->
                 <a on-tap="_removeSelectedItemTapped" hidden$="[[readonly]]"></a>
               </div>
             </template>
