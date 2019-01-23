@@ -48,9 +48,149 @@ Example:
 -->
 <dom-module id="paper-select">
 
-  <link rel="import" type="css" href="./paper-select.css">
-
   <template>
+
+    <style>
+:host {
+  display: block;
+  box-sizing: border-box;
+  position: relative;
+  outline: 0px;
+}
+
+:host([disabled]) {
+  pointer-events: none;
+}
+
+:host #selectedContainer {
+  display: flex;
+  min-width: 11em;
+}
+
+:host #selectedContainer > .selected-item {
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  vertical-align: middle;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 17px;
+  padding-left: 12px;
+  padding-right: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  background-color: #E7E7E7;
+  color: #757575;
+  cursor: default;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:host([multiple]) #selectedContainer {
+  flex-wrap: wrap;
+}
+
+:host([multiple]) #selectedContainer > .selected-item {
+  display: inline-block;
+  padding-right: 14px;
+  margin-right: 4px;
+  height: 32px;
+  line-height: 32px;
+  margin-bottom: 1px;
+  margin-top: 1px;
+}
+
+:host(:not([multiple])) #selectedContainer > .selected-item {
+  flex: 1;
+}
+
+:host #selectedContainer > .selected-item > a {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  background-color: #666;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+:host([multiple]) #selectedContainer > .selected-item > a {
+  right: 4px;
+  width: 6px;
+  height: 6px;
+}
+
+:host #selectedContainer > .selected-item > a:hover {
+  background-color: #d34336;
+}
+
+:host #selectedContainer > * {
+  width: auto;
+}
+
+:host #input {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  height: 34px;
+  line-height: 34px;
+  min-width: 1em;
+  margin-right: 24px;
+  background: transparent;
+  outline-style: none !important;
+  border: none;
+  flex: 1;
+}
+
+:host #clearButton {
+  display: inline-block;
+  position: absolute;
+  bottom: 9px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  background-color: #666;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+:host paper-menu {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  margin-top: 8px;
+  padding: 0;
+  top: 100%;
+  z-index: 1;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+:host paper-menu paper-item,
+:host::content paper-item {
+  position: relative;
+  cursor: pointer;
+}
+
+:host::content paper-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: auto !important;
+  height: 2px;
+  z-index: 1
+}
+
+    </style>
 
     <paper-input-container id="inputContainer" 
       no-label-float="[[noLabelFloat]]" 
